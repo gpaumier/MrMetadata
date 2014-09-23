@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+    <li class="active">Home</li>
+</ol>
+{% endblock %}
+
+{% block content %}      
+                    
+    <div class="jumbotron">
+        <div class="container">
+            <h1>File metadata cleanup drive</h1>
+            
+              <p>The <a href="https://meta.wikimedia.org/wiki/File_metadata_cleanup_drive" title="File metadata cleanup drive">File metadata cleanup drive</a> is an effort started in September 2014 by the Wikimedia Foundation. Its goal is to fix file description pages and tweak templates to ensure that multimedia files consistently contain machine-readable metadata across Wikimedia wikis.</p>
+                
+            <p><a class="btn btn-primary btn-lg pull-right" role="button" href="https://meta.wikimedia.org/wiki/File_metadata_cleanup_drive">See how to fix the pages &raquo;</a></p>
+                
+
+        </div>
+    </div>
+    
+    <div class="container">
+
+        <div class="panel-group" id="accordion">
+
+        {% if global %}
+        
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#Global">
+                    Global tally
+                    </a>
+                </h4>
+                </div>
+                <div id="Global" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="progress">
+                        <div class="progress-bar"
+                        style="width: {{ global['percentage_ok'] }}%">
+                            <span>{{ global['percentage_ok']}}% complete</span>
+                        </div>
+                        <div class="progress-bar progress-bar-invisible"
+                        style="width: {{ 100 - global['percentage_ok'] }}%">
+                            <span>{{ global['number_of_files_with_missing_mrd']|format_number }} {{ 'files' if ( global['number_of_files_with_missing_mrd'] > 1) else 'file' }} to go</span>
+                        </div>
+                    </div>
+                    <ul>
+                        <li>Total number of files: {{ global['number_of_files']|format_number }}</li>
+                        <li>Files with missing machine-readable metadata: {{ global['number_of_files_with_missing_mrd']|format_number }}</li>
+                    </ul>
+                </div>
+                </div>
+            </div>
+        
+        {% endif %}
+    
+    
+        {% for family in tallies %}
+        
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#{{ family }}">
+                
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1">{{ family|capitalize }}</div>
+                                    
+                                    {% if global[family] %}
+
+                                    <div class="col-xs-12 col-sm-10 col-md-10 col-lg-11">
+                                        <div class="progress">
+                                            <div class="progress-bar"
+                                            style="width: {{ global[family]['percentage_ok'] }}%">
+                                                <span>{{ global[family]['percentage_ok']}}% complete</span>
+                                            </div>
+                                            <div class="progress-bar progress-bar-invisible"
+                                            style="width: {{ 100 - global[family]['percentage_ok'] }}%">
+                                                <span>{{ global[family]['number_of_files_with_missing_mrd']|format_number }} {{ 'files' if ( global[family]['number_of_files_with_missing_mrd'] > 1) else 'file' }} to go</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% endif %}
+                                    
+                                </div>
+                            </a>
+                        </h4>
+                    </div>
+                   
+                <div id="{{ family }}" class="panel-collapse collapse">
+                    <div class="panel-body">
+                    
+                {% for prefix in tallies[family] %}
+                   
+                        <div id="{{ prefix }}.{{ family }}" class="row">
+                            <a title="Open page for {{ prefix }}.{{family}}" href="{{ family }}/{{ prefix }}/index.html">
+                            <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1">
+                                {{ prefix }}
+                            </div>
+                            <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
+                                <div class="progress">
+                                    <div class="progress-bar"
+                                        style="width: {{ tallies[family][prefix]['percentage_ok'] }}%">
+                                        <span>{{ tallies[family][prefix]['percentage_ok']}}% complete</span>
+                                    </div>
+                                    <div class="progress-bar progress-bar-invisible"
+                                    style="width: {{ 100 - tallies[family][prefix]['percentage_ok'] }}%">
+                                        <span>{{ tallies[family][prefix]['number_of_files_with_missing_mrd']|format_number }} {{ 'files' if ( tallies[family][prefix]['number_of_files_with_missing_mrd'] > 1) else 'file' }} to go</span>
+                                    </div>
+                                </div>
+                            </div>
+                            </a>
+                        </div>
+                   
+                {% endfor %}
+                    </div>
+                </div>
+               
+                   
+            </div>        
+        
+        {% endfor %}
+        
+        
+        
+        </div>  
+        
+    </div>
+
+{% endblock %}

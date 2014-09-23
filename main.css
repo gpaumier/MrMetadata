@@ -1,0 +1,7 @@
+
+.progress-bar-invisible {
+  background-color: transparent;
+  background-image: none;
+  background-repeat: repeat-x;
+  color: #555;
+}

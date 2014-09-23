@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ site }}{% endblock %}
+
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+    <li><a href="{{ return_to_root }}index.html">Home</a></li>
+    {% if pages['number'] != 1 %}
+        <li><a href="index.html">{{ site }}</a></li>
+        <li class="active">Page {{ pages['number'] }}</li>
+    {% else %}
+        <li class="active">{{ site }}</li>
+    {% endif %}
+</ol>
+{% endblock %}
+
+{% block content %}      
+                    
+    <div class="jumbotron">
+        <div class="container">
+            <h1>{{ site }} <small>— File metadata cleanup drive</small></h1>
+            
+            <p>The <a href="https://meta.wikimedia.org/wiki/File_metadata_cleanup_drive" title="File metadata cleanup drive">File metadata cleanup drive</a> is an effort started in September 2014 by the Wikimedia Foundation. Its goal is to fix file description pages and tweak templates to ensure that multimedia files consistently contain machine-readable metadata across Wikimedia wikis.</p>
+            
+            <p>The files listed below don't contain machine-readable metadata. Please help fix them!</p>
+
+            {% if pages['number'] == 1 %}
+            <div class="progress">
+                <div class="progress-bar"
+                style="width: {{ tallies['percentage_ok'] }}%">
+                    <span>{{ tallies['percentage_ok']}}% complete</span>
+                </div>
+                <div class="progress-bar progress-bar-invisible"
+                style="width: {{ 100 - tallies['percentage_ok'] }}%">
+                    <span>{{ tallies['number_of_files_with_missing_mrd']|format_number }} {{ 'files' if ( tallies['number_of_files_with_missing_mrd'] > 1) else 'file' }} to go</span>
+                </div>
+            </div>
+            <ul>
+                <li>Total number of files: {{ tallies['number_of_files']|format_number }}</li>
+                <li>Files with missing machine-readable metadata: {{ tallies['number_of_files_with_missing_mrd']|format_number }}</li>
+                <li>Last checked on: {{ tallies['last_checked_on'] }}</li>
+            </ul>
+            {% endif %}
+                
+            <p><a class="btn btn-primary btn-lg pull-right" role="button" href="https://meta.wikimedia.org/wiki/Special:MyLanguage/File_metadata_cleanup_drive/How_to_fix_metadata">See how to fix the metadata &raquo;</a></p>
+                
+
+        </div>
+    </div>
+    
+    <div class="container">
+
+        <table class="table table-striped">
+        
+            <tr>
+                <th>#</td>
+                <th>File</th>
+                <th>Description</th>
+                <th>Author</th>
+                <th>Source</th>
+                <th>License</th>
+                <th>License URL</th>
+            </tr>
+        
+        {% for item in formatted_list_of_files %}
+            <tr>
+                <td>{{ item['index'] + (pages['number'] -1) * max_files_per_page }}</td>
+                <td><a href="{{ item['url'] }}" title="{{ item['title'] }}">{{ item['title'] }}</a></td>
+                {{ item['description'] }}
+                {{ item['author'] }}
+                {{ item['source'] }}
+                {{ item['license_short'] }}
+                {{ item['license_url'] }}
+            </tr>
+        {% endfor %}
+        </table>
+    
+            
+        <ul class="pager">
+
+            {% if pages['number'] != 1 %}
+                <li class="previous"><a href="{{ pages['previous'] }}.html">&larr; Previous</a></li>
+            {% endif %}
+        
+            {% if not pages['is_last'] %}
+                <li class="next"><a href="{{ pages['next'] }}.html">Next &rarr;</a></li>
+            {% endif %}
+        
+        </ul>
+        
+    </div>
+
+{% endblock %}
