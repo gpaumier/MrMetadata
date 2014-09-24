@@ -11,6 +11,7 @@ import json
 import time
 import jinja2
 import datetime
+import argparse
 
 
 SEP = '\n_________________________________\n\n'
@@ -23,13 +24,22 @@ template_env = jinja2.Environment( loader=template_loader )
 #                                      main
 #--------------------------------------------------------------------------------
 
-def main():
+def main(args):
+    
+    if (args.family and args.prefix):
+       check_local_uploads(args.family, args.prefix)
+       return
+    
+    if args.commons:
+        check_commons()
+        return
+    
+    json_list = args.json
+    
+    if not json_list:
+        json_list = 'sites_with_local_uploads.json'
 
-    cycle_through_wikis()
-
-    #check_commons()
-
-    #update_main_page()
+    cycle_through_wikis(json_list)
     
     
 #--------------------------------------------------------------------------------
@@ -38,12 +48,15 @@ def main():
 
 
 def check_commons():
+    
+    print 'In the future, we\'ll be checking Commons here.'
+    
     return
 
 
-def cycle_through_wikis():
+def cycle_through_wikis(json_list):
 
-    with open('sites_with_local_uploads.json', 'r') as sites_with_local_uploads:
+    with open(json_list, 'r') as sites_with_local_uploads:
     
         wikis = json.load(sites_with_local_uploads)
         print SEP+'Loaded wikis from JSON'+SEP
@@ -492,7 +505,21 @@ template_env.filters['format_number'] = format_number
 #--------------------------------------------------------------------------------
 
 if __name__ == '__main__':
+    
+    parser = argparse.ArgumentParser(description='Go through a wiki or a set of wikis and identify files missing machine-readable metadata')
+    
+    parser.add_argument('--family', help='the family of the wiki to check')
+    
+    parser.add_argument('--prefix', help='the prefix of the wiki to check')
+    
+    parser.add_argument('--commons', action='store_const', const=True, help='check Commons')
+    
+    parser.add_argument('--json', help='A JSON file containing a list of wikis to check')
+    
+    arguments = parser.parse_args()
+    
     try:
-        main()
+        main(arguments)
+       
     finally:
         pywikibot.stopme()
