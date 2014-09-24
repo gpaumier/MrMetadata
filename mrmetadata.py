@@ -123,7 +123,7 @@ def check_local_uploads(family, prefix):
         another_batch_is_coming = len(batch_of_files) == REQUEST_FILES_BY_BATCHES_OF
 
         if ( another_batch_is_coming ):
-            start = batch_of_files[-1].title(withNamespace = False)
+            start = batch_of_files[-1].title(withNamespace = False).encode('utf-8')
             #print u'Next batch will start at {0}'.format(start) #debug
                     
             batch_of_files = batch_of_files[:-1]
