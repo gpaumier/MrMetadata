@@ -49,7 +49,7 @@ def main(args):
 
 def check_commons():
     
-    print 'In the future, we\'ll be checking Commons here.'
+    print u'In the future, we\'ll be checking Commons here.'
     
     return
 
@@ -59,11 +59,11 @@ def cycle_through_wikis(json_list):
     with open(json_list, 'r') as sites_with_local_uploads:
     
         wikis = json.load(sites_with_local_uploads)
-        print SEP+'Loaded wikis from JSON'+SEP
+        print SEP+u'Loaded wikis from JSON'+SEP
 
         for family in wikis:
             
-            print "Started run through {0}".format(family)
+            print u'Started run through {0}'.format(family)
 
             for prefix in wikis[family]:
                 
@@ -72,7 +72,7 @@ def cycle_through_wikis(json_list):
 
 def check_local_uploads(family, prefix):
             
-    print SEP+"Started run through {0}.{1}".format(prefix, family)
+    print SEP+u'Started run through {0}.{1}'.format(prefix, family)
 
     output_directory = 'public_html/'+family+'/'+prefix
     if not os.path.exists(output_directory):      # Create language directory if it doesn't exist
@@ -181,7 +181,7 @@ def check_local_uploads(family, prefix):
 
 
     done_checking_site = time.clock();
-    print 'Checked {0}.{1} in {2}s'.format(prefix, family, done_checking_site - start_checking_site)
+    print u'Checked {0}.{1} in {2}s'.format(prefix, family, done_checking_site - start_checking_site)
 
 
     # Update the tallies
@@ -208,7 +208,7 @@ def get_batch_of_files(current_site, batches_of, api_step, start_from):
 
     start_getting_allfiles = time.clock()
 
-    print 'Requesting {0} files'.format(batches_of)
+    print u'Requesting {0} files'.format(batches_of)
 
     batch_of_files_generator = pagegenerators.AllpagesPageGenerator(site=current_site, start=start_from, namespace=6, includeredirects=False, total=batches_of, step=api_step, content=False)
 
@@ -219,7 +219,7 @@ def get_batch_of_files(current_site, batches_of, api_step, start_from):
     for page in batch_of_files_generator:
         batch_of_files.append(page)
                     
-    print 'Got {0} pages in {1}s'.format(len(batch_of_files), done_getting_allfiles - start_getting_allfiles)
+    print u'Got {0} pages in {1}s'.format(len(batch_of_files), done_getting_allfiles - start_getting_allfiles)
 
     return batch_of_files
 
@@ -229,7 +229,7 @@ def check_metadata(current_site, pages):
     
     start_checking_metadata = time.clock()
     number_of_pages_to_check = len(pages)
-    print 'Checking metadata for {0} pages'.format(number_of_pages_to_check)
+    print u'Checking metadata for {0} pages'.format(number_of_pages_to_check)
 
     titles = []
     files_with_missing_mrd = []
@@ -286,7 +286,7 @@ def check_metadata(current_site, pages):
             print u'Skipping {0}'.format(title)
                         
     done_checking_metadata = time.clock();
-    print 'Metadata checked in {0}s'.format(done_checking_metadata - start_checking_metadata)
+    print u'Metadata checked in {0}s'.format(done_checking_metadata - start_checking_metadata)
 
     return files_with_missing_mrd    
 
@@ -369,11 +369,13 @@ def update_tallies( site_tally ):
         tallies['global'][family] = family_tally
 
         tallies_file.seek(0)  # rewind
-        tallies_file.write(json.dumps(tallies,indent=4,sort_keys=True,ensure_ascii=False))
+                
+        tallies_file.write(unicode(json.dumps(tallies,indent=4,sort_keys=True,ensure_ascii=False)))
+              
         tallies_file.truncate()
         tallies_file.close()
 
-    print 'Updated tallies.'
+    print u'Updated tallies.'
 
 
 #--------------------------------------------------------------------------------
@@ -466,8 +468,6 @@ def output_site_page(output_directory, page_number, current_site, files_to_print
 
 def output_first_page(output_directory, current_site, files_to_print, max_files_per_page, tallies, last_page = False, ):
 
-    print 'print first page'
-
     template = template_env.get_template( 'site_page.html' )
 
     formatted_list_of_files = format_files ( files_to_print, current_site)
@@ -506,15 +506,15 @@ template_env.filters['format_number'] = format_number
 
 if __name__ == '__main__':
     
-    parser = argparse.ArgumentParser(description='Go through a wiki or a set of wikis and identify files missing machine-readable metadata')
+    parser = argparse.ArgumentParser(description=u'Go through a wiki or a set of wikis and identify files missing machine-readable metadata')
     
-    parser.add_argument('--family', help='the family of the wiki to check')
+    parser.add_argument('--family', help=u'the family of the wiki to check')
     
-    parser.add_argument('--prefix', help='the prefix of the wiki to check')
+    parser.add_argument('--prefix', help=u'the prefix of the wiki to check')
     
-    parser.add_argument('--commons', action='store_const', const=True, help='check Commons')
+    parser.add_argument('--commons', action='store_const', const=True, help=u'check Commons')
     
-    parser.add_argument('--json', help='A JSON file containing a list of wikis to check')
+    parser.add_argument('--json', help=u'A JSON file containing a list of wikis to check')
     
     arguments = parser.parse_args()
     
