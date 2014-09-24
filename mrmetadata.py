@@ -121,7 +121,7 @@ def check_local_uploads(family, prefix):
 
         if ( another_batch_is_coming ):
             start = batch_of_files[-1].title(withNamespace = False)
-            print u'Next batch will start at {0}'.format(start)
+            #print u'Next batch will start at {0}'.format(start) #debug
                     
             batch_of_files = batch_of_files[:-1]
 
@@ -208,7 +208,7 @@ def get_batch_of_files(current_site, batches_of, api_step, start_from):
 
     start_getting_allfiles = time.clock()
 
-    print u'Requesting {0} files'.format(batches_of)
+    #print u'Requesting {0} files'.format(batches_of) #debug
 
     batch_of_files_generator = pagegenerators.AllpagesPageGenerator(site=current_site, start=start_from, namespace=6, includeredirects=False, total=batches_of, step=api_step, content=False)
 
@@ -219,7 +219,7 @@ def get_batch_of_files(current_site, batches_of, api_step, start_from):
     for page in batch_of_files_generator:
         batch_of_files.append(page)
                     
-    print u'Got {0} pages in {1}s'.format(len(batch_of_files), done_getting_allfiles - start_getting_allfiles)
+    #print u'Got {0} pages in {1}s'.format(len(batch_of_files), done_getting_allfiles - start_getting_allfiles) #debug
 
     return batch_of_files
 
@@ -229,7 +229,7 @@ def check_metadata(current_site, pages):
     
     start_checking_metadata = time.clock()
     number_of_pages_to_check = len(pages)
-    print u'Checking metadata for {0} pages'.format(number_of_pages_to_check)
+    #print u'Checking metadata for {0} pages'.format(number_of_pages_to_check) #debug
 
     titles = []
     files_with_missing_mrd = []
@@ -286,7 +286,7 @@ def check_metadata(current_site, pages):
             print u'Skipping {0}'.format(title)
                         
     done_checking_metadata = time.clock();
-    print u'Metadata checked in {0}s'.format(done_checking_metadata - start_checking_metadata)
+    #print u'Metadata checked in {0}s'.format(done_checking_metadata - start_checking_metadata)
 
     return files_with_missing_mrd    
 
