@@ -283,7 +283,8 @@ def check_metadata(current_site, pages):
                 files_with_missing_mrd.append([title, no_mr_description, no_mr_author, no_mr_source, no_mr_license_short, no_mr_license_url])
                         
         except KeyError: #No imageinfo means no image, so skip
-            print u'Skipping {0}'.format(title)
+            #print u'Skipping {0}'.format(title)
+            pass
                         
     done_checking_metadata = time.clock();
     #print u'Metadata checked in {0}s'.format(done_checking_metadata - start_checking_metadata)
