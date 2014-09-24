@@ -61,7 +61,7 @@ def check_local_uploads(family, prefix):
             
     print SEP+"Started run through {0}.{1}".format(prefix, family)
 
-    output_directory = family+'/'+prefix
+    output_directory = 'public_html/'+family+'/'+prefix
     if not os.path.exists(output_directory):      # Create language directory if it doesn't exist
         os.makedirs(output_directory)
 
@@ -74,9 +74,6 @@ def check_local_uploads(family, prefix):
                     }
 
     start_checking_site = time.clock()
-
-    if not os.path.exists(family):      # Create family directory if it doesn't exist
-        os.makedirs(family)
             
     REQUEST_FILES_BY_BATCHES_OF = 3000
             
@@ -391,7 +388,7 @@ def update_main_page():
 
     html_output = template.render( template_params )
 
-    file_name = 'index.html'
+    file_name = 'public_html/index.html'
 
     with io.open(file_name, 'w', encoding='utf8') as f:
         f.write(html_output)
