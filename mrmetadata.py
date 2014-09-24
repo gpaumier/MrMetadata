@@ -7,6 +7,7 @@ import pywikibot
 from pywikibot import pagegenerators
 from pywikibot import site
 from pywikibot import page
+from pywikibot import config2
 import json
 import time
 import jinja2
@@ -19,6 +20,8 @@ SEP = '\n_________________________________\n\n'
 template_loader = jinja2.FileSystemLoader( searchpath="templates/" )
 
 template_env = jinja2.Environment( loader=template_loader )
+
+config2.register_families_folder('families')
 
 #--------------------------------------------------------------------------------
 #                                      main
