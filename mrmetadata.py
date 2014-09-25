@@ -13,6 +13,7 @@ import time
 import jinja2
 import datetime
 import argparse
+import collections
 
 
 SEP = '\n_________________________________\n\n'
@@ -402,8 +403,13 @@ def update_main_page():
     except KeyError:
         global_tallies = {}
 
+    alphabetical_tallies = collections.OrderedDict(sorted(unsorted_tallies.items(), key=lambda t: t[0]))
+
+    for family in alphabetical_tallies:
+        alphabetical_tallies[family] = collections.OrderedDict(sorted(alphabetical_tallies[family].items(), key=lambda t: t[0]))
+        
     template_params = { 'global': global_tallies,
-                        'tallies': unsorted_tallies }
+                        'tallies': alphabetical_tallies }
 
     html_output = template.render( template_params )
 
