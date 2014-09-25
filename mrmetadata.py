@@ -70,7 +70,7 @@ def cycle_through_wikis(json_list, resume):
         wikis = collections.OrderedDict(sorted(wikis.items(), key=lambda t: t[0]))      # Make sure our dict is always in the same order
 
         if resume:
-            resume_from = get_resume_point()
+            resume_from = get_resume_point(json_list)
             
         for family in wikis:
             
@@ -84,7 +84,7 @@ def cycle_through_wikis(json_list, resume):
                         print u'Started run through {0}'.format(family)
                         
                         check_local_uploads(family, prefix)
-                        set_resume_point(family, prefix)
+                        set_resume_point(json_list, family, prefix)
                         resume = False
             
             
@@ -402,9 +402,9 @@ def update_tallies( site_tally ):
 #                              Resume a check (JSON only)
 #--------------------------------------------------------------------------------
 
-def get_resume_point():
+def get_resume_point(json_list):
     
-    with io.open('resume.json', 'r', encoding='utf8') as resume_file:
+    with io.open('resume_'+json_list, 'r', encoding='utf8') as resume_file:
         resume_point = json.load(resume_file)
         resume_file.close()
         
@@ -412,11 +412,11 @@ def get_resume_point():
 
 
 
-def set_resume_point(family, prefix):
+def set_resume_point(json_list, family, prefix):
     
     resume_point = {'family': family, 'prefix': prefix}
     
-    with io.open('resume.json', 'w', encoding='utf8') as resume_file:       
+    with io.open('resume_'+json_list, 'w', encoding='utf8') as resume_file:       
         resume_file.write(unicode(json.dumps(resume_point,indent=4,sort_keys=True,ensure_ascii=False)))
         resume_file.close()
 
