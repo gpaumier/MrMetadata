@@ -40,10 +40,12 @@ def main(args):
     
     json_list = args.json
     
+    resume = args.resume
+    
     if not json_list:
         json_list = 'sites_with_local_uploads.json'
 
-    cycle_through_wikis(json_list)
+    cycle_through_wikis(json_list, resume)
     
     
 #--------------------------------------------------------------------------------
@@ -58,20 +60,33 @@ def check_commons():
     return
 
 
-def cycle_through_wikis(json_list):
+def cycle_through_wikis(json_list, resume):
 
     with open(json_list, 'r') as sites_with_local_uploads:
     
         wikis = json.load(sites_with_local_uploads)
         print SEP+u'Loaded wikis from JSON'+SEP
+        
+        wikis = collections.OrderedDict(sorted(wikis.items(), key=lambda t: t[0]))      # Make sure our dict is always in the same order
 
+        if resume:
+            resume_from = get_resume_point()
+            
         for family in wikis:
             
-            print u'Started run through {0}'.format(family)
-
-            for prefix in wikis[family]:
-                
-                check_local_uploads(family, prefix)
+            if resume and (family <> resume_from['family']):
+                pass
+            else:
+                for prefix in wikis[family]:
+                    if resume and (prefix <> resume_from['prefix']):
+                        pass
+                    else:
+                        print u'Started run through {0}'.format(family)
+                        
+                        check_local_uploads(family, prefix)
+                        set_resume_point(family, prefix)
+                        resume = False
+            
             
 
 def check_local_uploads(family, prefix):
@@ -384,6 +399,29 @@ def update_tallies( site_tally ):
 
 
 #--------------------------------------------------------------------------------
+#                              Resume a check (JSON only)
+#--------------------------------------------------------------------------------
+
+def get_resume_point():
+    
+    with io.open('resume.json', 'r', encoding='utf8') as resume_file:
+        resume_point = json.load(resume_file)
+        resume_file.close()
+        
+    return resume_point
+
+
+
+def set_resume_point(family, prefix):
+    
+    resume_point = {'family': family, 'prefix': prefix}
+    
+    with io.open('resume.json', 'w', encoding='utf8') as resume_file:       
+        resume_file.write(unicode(json.dumps(resume_point,indent=4,sort_keys=True,ensure_ascii=False)))
+        resume_file.close()
+
+
+#--------------------------------------------------------------------------------
 #                              Output HTML pages
 #--------------------------------------------------------------------------------
 
@@ -402,14 +440,15 @@ def update_main_page():
         global_tallies = unsorted_tallies.pop('global')
     except KeyError:
         global_tallies = {}
-
+        
     alphabetical_tallies = collections.OrderedDict(sorted(unsorted_tallies.items(), key=lambda t: t[0]))
 
     for family in alphabetical_tallies:
-        alphabetical_tallies[family] = collections.OrderedDict(sorted(alphabetical_tallies[family].items(), key=lambda t: t[0]))
+        alphabetical_tallies[family] = collections.OrderedDict(sorted(alphabetical_tallies[family].items(), key=lambda t: t[0]))    
         
     template_params = { 'global': global_tallies,
-                        'tallies': alphabetical_tallies }
+                        'tallies': alphabetical_tallies
+                        }
 
     html_output = template.render( template_params )
 
@@ -476,6 +515,7 @@ def output_site_page(output_directory, page_number, current_site, files_to_print
         f.write(html_output)
         f.close()
 
+
 def output_first_page(output_directory, current_site, files_to_print, max_files_per_page, tallies, last_page = False, ):
 
     template = template_env.get_template( 'site_page.html' )
@@ -525,6 +565,8 @@ if __name__ == '__main__':
     parser.add_argument('--commons', action='store_const', const=True, help=u'check Commons')
     
     parser.add_argument('--json', help=u'A JSON file containing a list of wikis to check')
+    
+    parser.add_argument('--resume', action='store_const', const=True, help=u'Resume a check from a JSON file from the last wiki completed')
     
     arguments = parser.parse_args()
     
