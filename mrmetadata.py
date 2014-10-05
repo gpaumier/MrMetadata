@@ -102,7 +102,7 @@ def check_local_uploads(family, prefix):
                     'number_of_files': 0,
                     'number_of_files_with_missing_mrd': 0,
                     'percentage_ok': 0,
-                    'last_checked_on': None
+                    'last_updated_on': None
                     }
 
     start_checking_site = time.clock()
@@ -211,7 +211,7 @@ def check_local_uploads(family, prefix):
     except ZeroDivisionError:
         site_tally['percentage_ok'] = 100           # No files on the wiki means there's nothing to fix
             
-    site_tally['last_checked_on'] = datetime.date.today().isoformat()
+    site_tally['last_updated_on'] = datetime.date.today().isoformat()
 
     update_tallies( site_tally )
 
@@ -321,16 +321,16 @@ def update_tallies( site_tally ):
 
     #TODO handle case where there are no more files on the wiki
 
-    #Reminder: site_tally = {'prefix', 'family', 'number_of_files', 'number_of_files_with_missing_mrd', 'last_checked_on'}
+    #Reminder: site_tally = {'prefix', 'family', 'number_of_files', 'number_of_files_with_missing_mrd', 'percentage_ok', 'last_updated_on'}
     
     family = site_tally.pop('family')       # get those values and remove them to save time when we save the rest later
     prefix = site_tally.pop('prefix')
+    timestamp = site_tally.pop('last_updated_on')
     
     if not os.path.exists('tallies.json'):
         tallies = {}
     else:
         with io.open('tallies.json', 'r', encoding='utf8') as tallies_file:
-            tallies_file.seek(0)  # rewind since we opened for appending
             tallies = json.load(tallies_file)
             tallies_file.close()
 
@@ -338,21 +338,23 @@ def update_tallies( site_tally ):
     # Get the existing site tally if they exist, else initialize them
     
     try:
-        old_site_tally = tallies[family][prefix]
+        old_site_tally_timestamp = tallies[family][prefix]['last_updated_on']
+        old_site_tally = tallies[family][prefix][old_site_tally_timestamp]
     except KeyError:
         old_site_tally = {  'number_of_files': 0,
-                            'number_of_files_with_missing_mrd': 0,
-                            'last_checked_on': None }
+                            'number_of_files_with_missing_mrd': 0}
 
     # Get the existing global tallies if they exist, else initialize them
         
     try:
-        global_tally = tallies['global']                        # We have a global tally set
+        last_global_tally_timestamp = tallies['global']['global']['last_updated_on']
+        global_tally = tallies['global']['global'][last_global_tally_timestamp]
     except KeyError:
         global_tally = { 'number_of_files': 0, 'number_of_files_with_missing_mrd': 0 }
         
     try:
-        family_tally = global_tally[family]                     # We have a tally for this family in the global set
+        last_family_tally_timestamp = tallies['global'][family]['last_updated_on']
+        family_tally = tallies['global'][family][last_family_tally_timestamp]
     except KeyError:
         family_tally = { 'number_of_files': 0, 'number_of_files_with_missing_mrd': 0}
                 
@@ -376,19 +378,44 @@ def update_tallies( site_tally ):
                 
     global_tally['percentage_ok'] =  int(100 - ( 100 * global_tally['number_of_files_with_missing_mrd'] / global_tally['number_of_files'] ))
     
-    # Write the updated tallies to the JSON file
-        
-    with io.open('tallies.json', 'w', encoding='utf8') as tallies_file:
+    # Prepare the site tally for writing
 
+    try:
+        tallies[family][prefix]['last_updated_on'] = timestamp
+        
+    except KeyError:                                    # No tally yet for this family or this wiki
+        
         try:
-            tallies[family][prefix] = site_tally
-        except KeyError:                                # We don't have any tallies for this family yet
-            tallies[family] = { prefix: site_tally }
-        
-        tallies['global'] = global_tally
-        tallies['global'][family] = family_tally
+            tallies[family] = { prefix: {} }
+            tallies[family][prefix]['last_updated_on'] = timestamp
 
-        tallies_file.seek(0)  # rewind
+        except KeyError:                                # No tally yet for this family
+            tallies = { family: { prefix: {} } }
+            tallies[family][prefix]['last_updated_on'] = timestamp
+            
+    tallies[family][prefix][timestamp] = site_tally
+            
+    # Prepare the global tally for writing
+    
+    try:
+        tallies['global']['global']['last_updated_on'] = timestamp
+    except KeyError:                                    # No global tallies
+        tallies['global'] = { 'global': { 'last_updated_on': timestamp } }
+    
+    tallies['global']['global'][timestamp] = global_tally
+    
+    # Prepare the family tally for writing
+    
+    try:
+        tallies['global'][family]['last_updated_on'] = timestamp
+    except KeyError:                                    # No global tally for this tamily
+        tallies['global'][family] = { 'last_updated_on': timestamp }
+        
+    tallies['global'][family]['last_updated_on'] = family_tally
+
+    # Write the updated tallies to the JSON file
+
+    with io.open('tallies.json', 'w', encoding='utf8') as tallies_file:
                 
         tallies_file.write(unicode(json.dumps(tallies,indent=4,sort_keys=True,ensure_ascii=False)))
               
@@ -398,6 +425,7 @@ def update_tallies( site_tally ):
     print u'Updated tallies.'
 
 
+     
 #--------------------------------------------------------------------------------
 #                              Resume a check (JSON only)
 #--------------------------------------------------------------------------------
