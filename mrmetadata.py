@@ -386,12 +386,10 @@ def update_tallies( site_tally ):
     except KeyError:                                    # No tally yet for this family or this wiki
         
         try:
-            tallies[family] = { prefix: {} }
-            tallies[family][prefix]['last_updated_on'] = timestamp
+            tallies[family][prefix] = {'last_updated_on': timestamp}
 
         except KeyError:                                # No tally yet for this family
-            tallies = { family: { prefix: {} } }
-            tallies[family][prefix]['last_updated_on'] = timestamp
+            tallies[family] = { prefix: {'last_updated_on': timestamp} }
             
     tallies[family][prefix][timestamp] = site_tally
             
