@@ -58,7 +58,7 @@
         {% endif %}
     
     
-        {% for family in tallies %}
+        {% for family in site_tallies %}
         
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -68,17 +68,19 @@
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1">{{ family|capitalize }}</div>
                                     
-                                    {% if global[family] %}
+                                    {% if family_tallies %}
+                                    
+                                    {% set latest_family_tally = family_tallies[family][ family_tallies[family]['last_updated_on' ] ] %}
 
                                     <div class="col-xs-12 col-sm-10 col-md-10 col-lg-11">
                                         <div class="progress">
                                             <div class="progress-bar"
-                                            style="width: {{ global[family]['percentage_ok'] }}%">
-                                                <span>{{ global[family]['percentage_ok']}}% complete</span>
+                                            style="width: {{ latest_family_tally['percentage_ok'] }}%">
+                                                <span>{{ latest_family_tally['percentage_ok']}}% complete</span>
                                             </div>
                                             <div class="progress-bar progress-bar-invisible"
-                                            style="width: {{ 100 - global[family]['percentage_ok'] }}%">
-                                                <span>{{ global[family]['number_of_files_with_missing_mrd']|format_number }} {{ 'files' if ( global[family]['number_of_files_with_missing_mrd'] > 1) else 'file' }} to go</span>
+                                            style="width: {{ 100 - latest_family_tally['percentage_ok'] }}%">
+                                                <span>{{ latest_family_tally['number_of_files_with_missing_mrd']|format_number }} {{ 'files' if ( latest_family_tally['number_of_files_with_missing_mrd'] > 1) else 'file' }} to go</span>
                                             </div>
                                         </div>
                                     </div>
@@ -93,7 +95,9 @@
                 <div id="{{ family }}" class="panel-collapse collapse">
                     <div class="panel-body">
                     
-                {% for prefix in tallies[family] %}
+                {% for prefix in site_tallies[family] %}
+                
+                    {% set latest_site_tally = site_tallies[family][prefix][ site_tallies[family][prefix]['last_updated_on'] ] %}
                    
                         <div id="{{ prefix }}.{{ family }}" class="row">
                             <a title="Open page for {{ prefix }}.{{family}}" href="{{ family }}/{{ prefix }}/index.html">
@@ -103,12 +107,12 @@
                             <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
                                 <div class="progress">
                                     <div class="progress-bar"
-                                        style="width: {{ tallies[family][prefix]['percentage_ok'] }}%">
-                                        <span>{{ tallies[family][prefix]['percentage_ok']}}% complete</span>
+                                        style="width: {{ latest_site_tally['percentage_ok'] }}%">
+                                        <span>{{ latest_site_tally['percentage_ok']}}% complete</span>
                                     </div>
                                     <div class="progress-bar progress-bar-invisible"
-                                    style="width: {{ 100 - tallies[family][prefix]['percentage_ok'] }}%">
-                                        <span>{{ tallies[family][prefix]['number_of_files_with_missing_mrd']|format_number }} {{ 'files' if ( tallies[family][prefix]['number_of_files_with_missing_mrd'] > 1) else 'file' }} to go</span>
+                                    style="width: {{ 100 - latest_site_tally['percentage_ok'] }}%">
+                                        <span>{{ latest_site_tally['number_of_files_with_missing_mrd']|format_number }} {{ 'files' if ( latest_site_tally['number_of_files_with_missing_mrd'] > 1) else 'file' }} to go</span>
                                     </div>
                                 </div>
                             </div>

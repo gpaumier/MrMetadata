@@ -411,7 +411,7 @@ def update_tallies( site_tally ):
     except KeyError:                                    # No global tally for this tamily
         tallies['global'][family] = { 'last_updated_on': timestamp }
         
-    tallies['global'][family]['last_updated_on'] = family_tally
+    tallies['global'][family][timestamp] = family_tally
 
     # Write the updated tallies to the JSON file
 
@@ -464,18 +464,19 @@ def update_main_page():
         unsorted_tallies = json.load(tallies_file)
         tallies_file.close()
 
-    try:
-        global_tallies = unsorted_tallies.pop('global')
-    except KeyError:
-        global_tallies = {}
+    global_tally = unsorted_tallies['global'].pop('global')         # Get all tallies
+    global_tally = global_tally[ global_tally['last_updated_on'] ]  # Get latest tally
+        
+    family_tallies = unsorted_tallies.pop('global')
         
     alphabetical_tallies = collections.OrderedDict(sorted(unsorted_tallies.items(), key=lambda t: t[0]))
 
     for family in alphabetical_tallies:
         alphabetical_tallies[family] = collections.OrderedDict(sorted(alphabetical_tallies[family].items(), key=lambda t: t[0]))    
         
-    template_params = { 'global': global_tallies,
-                        'tallies': alphabetical_tallies
+    template_params = { 'global': global_tally,
+                        'family_tallies': family_tallies,
+                        'site_tallies': alphabetical_tallies
                         }
 
     html_output = template.render( template_params )
