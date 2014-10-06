@@ -298,7 +298,7 @@ def check_metadata(current_site, pages):
             except KeyError:
                 no_mr_license_url = True
                 
-            if ( no_mr_description or no_mr_author or no_mr_source or no_mr_license_short or no_mr_license_url):
+            if ( no_mr_description and no_mr_author and no_mr_source or no_mr_license_short and no_mr_license_url):
                 files_with_missing_mrd.append([title, no_mr_description, no_mr_author, no_mr_source, no_mr_license_short, no_mr_license_url])
                         
         except KeyError: #No imageinfo means no image, so skip
