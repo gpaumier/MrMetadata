@@ -348,7 +348,7 @@ def update_tallies( output_directory_prefix, site_tally ):
         
     
     try:
-        global_tally = tallies['global']                        # We have a global tally set
+        global_tally = tallies['global']['global']              # We have a global tally set
     except KeyError:
         global_tally = { 'number_of_files': 0,
                          'number_of_files_with_missing_mrd': 0,
@@ -356,7 +356,7 @@ def update_tallies( output_directory_prefix, site_tally ):
                        }
         
     try:
-        family_tally = global_tally[family]                     # We have a tally for this family in the global set
+        family_tally = tallies['global'][family]                     # We have a tally for this family in the global set
     except KeyError:
         family_tally = { 'number_of_files': 0,
                          'number_of_files_with_missing_mrd': 0,
@@ -376,6 +376,7 @@ def update_tallies( output_directory_prefix, site_tally ):
     except ZeroDivisionError:                       # No files on a family
         site_tally['percentage_ok'] = 100           # Probably not gonna happen but let's be safe
         
+    family_tally['last_updated_on'] = site_tally['last_updated_on']
         
     # Update the global tally
         
@@ -385,6 +386,7 @@ def update_tallies( output_directory_prefix, site_tally ):
                 
     global_tally['percentage_ok'] =  int(100 - ( 100 * global_tally['number_of_files_with_missing_mrd'] / global_tally['number_of_files'] ))
     
+    global_tally['last_updated_on'] = site_tally['last_updated_on']
     
     # Write the updated tallies to the JSON file
     
@@ -395,7 +397,11 @@ def update_tallies( output_directory_prefix, site_tally ):
         except KeyError:                                # We don't have any tallies for this family yet
             tallies[family] = { prefix: site_tally }
         
-        tallies['global'] = global_tally
+        try:
+            tallies['global']['global'] = global_tally
+        except KeyError:                                # We don't have global tallies yet
+            tallies['global'] = {'global': global_tally}
+            
         tallies['global'][family] = family_tally
                 
         tallies_file.write(unicode(json.dumps(tallies,indent=4,sort_keys=True,ensure_ascii=False)))
@@ -404,9 +410,16 @@ def update_tallies( output_directory_prefix, site_tally ):
         tallies_file.close()
 
 
-    # Archive the new tally to the list of historical tallies for this site
+    # Archive the new tallies to the lists of historical tallies
     
-    tally_archive_file_name = output_directory_prefix + family + '/' + prefix + '/historical_tallies.json'
+    archive_tally(site_tally, output_directory_prefix + family + '/' + prefix + '/historical_tallies.json')
+    archive_tally(family_tally, output_directory_prefix + family + '/historical_tallies.json')
+    archive_tally(global_tally, output_directory_prefix + '/historical_tallies.json')
+        
+    print u'Updated tallies.'
+
+
+def archive_tally(tally, tally_archive_file_name):
     
     if not os.path.exists(tally_archive_file_name):
         historical_tallies = {}
@@ -415,10 +428,10 @@ def update_tallies( output_directory_prefix, site_tally ):
             historical_tallies = json.load(historical_tallies_file)
             historical_tallies_file.close()
 
-    timestamp = site_tally.pop('last_updated_on')
+    timestamp = tally.pop('last_updated_on')
 
     historical_tallies['last_updated_on'] = timestamp
-    historical_tallies[timestamp] = site_tally
+    historical_tallies[timestamp] = tally
 
     with io.open(tally_archive_file_name, 'w', encoding='utf8') as historical_tallies_file:
                 
@@ -426,8 +439,6 @@ def update_tallies( output_directory_prefix, site_tally ):
               
         historical_tallies_file.truncate()
         historical_tallies_file.close()
-        
-    print u'Updated tallies.'
 
 
      

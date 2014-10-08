@@ -39,17 +39,17 @@
                 <div class="panel-body">
                     <div class="progress">
                         <div class="progress-bar"
-                        style="width: {{ global['percentage_ok'] }}%">
-                            <span>{{ global['percentage_ok']}}% complete</span>
+                        style="width: {{ global['global']['percentage_ok'] }}%">
+                            <span>{{ global['global']['percentage_ok']}}% complete</span>
                         </div>
                         <div class="progress-bar progress-bar-invisible"
-                        style="width: {{ 100 - global['percentage_ok'] }}%">
-                            <span>{{ global['number_of_files_with_missing_mrd']|format_number }} {{ 'files' if ( global['number_of_files_with_missing_mrd'] > 1) else 'file' }} to go</span>
+                        style="width: {{ 100 - global['global']['percentage_ok'] }}%">
+                            <span>{{ global['global']['number_of_files_with_missing_mrd']|format_number }} {{ 'files' if ( global['global']['number_of_files_with_missing_mrd'] > 1) else 'file' }} to go</span>
                         </div>
                     </div>
                     <ul>
-                        <li>Total number of files: {{ global['number_of_files']|format_number }}</li>
-                        <li>Files with missing machine-readable metadata: {{ global['number_of_files_with_missing_mrd']|format_number }}</li>
+                        <li>Total number of files: {{ global['global']['number_of_files']|format_number }}</li>
+                        <li>Files with missing machine-readable metadata: {{ global['global']['number_of_files_with_missing_mrd']|format_number }}</li>
                     </ul>
                 </div>
                 </div>
