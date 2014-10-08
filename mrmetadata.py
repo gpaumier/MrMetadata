@@ -340,7 +340,8 @@ def update_tallies( output_directory_prefix, site_tally ):
         old_site_tally = tallies[family][prefix]
     except KeyError:
         old_site_tally = {  'number_of_files': 0,
-                            'number_of_files_with_missing_mrd': 0}
+                            'number_of_files_with_missing_mrd': 0,
+                            'percentage_ok': 100}
 
 
     # Get the existing global and family tallies if they exist, else initialize them
@@ -349,12 +350,18 @@ def update_tallies( output_directory_prefix, site_tally ):
     try:
         global_tally = tallies['global']                        # We have a global tally set
     except KeyError:
-        global_tally = { 'number_of_files': 0, 'number_of_files_with_missing_mrd': 0 }
+        global_tally = { 'number_of_files': 0,
+                         'number_of_files_with_missing_mrd': 0,
+                         'percentage_ok': 100
+                       }
         
     try:
         family_tally = global_tally[family]                     # We have a tally for this family in the global set
     except KeyError:
-        family_tally = { 'number_of_files': 0, 'number_of_files_with_missing_mrd': 0}
+        family_tally = { 'number_of_files': 0,
+                         'number_of_files_with_missing_mrd': 0,
+                         'percentage_ok': 100
+                       }
               
                 
                 
