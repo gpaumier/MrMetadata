@@ -1,0 +1,89 @@
+{
+    "mediawiki": [
+        "mediawiki"
+    ],
+    "meta": [
+        "meta"
+    ],
+    "wikibooks": [
+        "pt",
+        "el",
+        "ka",
+        "ru",
+        "he",
+        "en",
+        "de"
+    ],
+    "wikinews": [
+        "en",
+        "pl"
+    ], 
+    "wikipedia": [
+        "af",
+        "am",
+        "an",
+        "arz",
+        "as",
+        "ba",
+        "bcl",
+        "be",
+        "be-x-old",
+        "bg",
+        "bn",
+        "br",
+        "ca",
+        "dv",
+        "eo",
+        "et",
+        "fy",
+        "ga",
+        "hi",
+        "hy",
+        "is",
+        "jv",
+        "kk",
+        "km",
+        "kn",
+        "ky",
+        "lb",
+        "lmo",
+        "mk",
+        "ml",
+        "mn",
+        "mt",
+        "my",
+        "nds-nl",
+        "oc",
+        "pms",
+        "ps",
+        "sah",
+        "scn",
+        "sh",
+        "si",
+        "sl",
+        "sw",
+        "te"
+        "tl",
+        "tt",
+        "ur",
+        "wa",
+        "yi"
+    ],
+    "wikisource": [
+        "ar",
+        "de",
+        "es",
+        "fr",
+        "it",
+        "yi"
+    ],
+    "wikisourceorg": [
+        "mul"
+    ],
+    "wikiversity": [
+        "de"
+    ],
+    "wmfwiki": [
+        "wmfwiki"
+    ]
+}

@@ -1,9 +1,10 @@
 {
-    "wikiversity": [
-        "en"
+    "wikibooks": [
+        "hu"
     ],
     "wikipedia": [
         "ar",
+        "az",
         "bs",
         "cy",
         "el",
@@ -13,10 +14,28 @@
         "gl",
         "he",
         "hr",
+        "hu",
         "id",
-        "ja",
+        "ka",
         "ko",
         "lt",
-        "lv"
+        "lv",
+        "mr",
+        "ms",
+        "pt",
+        "ro",
+        "sq",
+        "sr",
+        "ta",
+        "th",
+        "tr",
+        "vi",
+        "zh"
+    ],
+    "wikisource": [
+        "en"
+    ],
+    "wikiversity": [
+        "en"
     ]
 }
