@@ -223,6 +223,8 @@ def check_local_uploads(family, prefix):
 
     # Print the first page now that we have the tallies
 
+    site_tally['last_updated_on'] = datetime.date.today().isoformat()   # Re-add since we popped it while archiving
+
     output_first_page(output_directory, current_site, files_to_print_on_the_first_page, NUMBER_OF_FILES_PER_PAGE, site_tally, last_page = all_files_are_on_first_page  )
 
             
@@ -539,7 +541,6 @@ def update_main_page():
     with io.open(file_name, 'w', encoding='utf8') as f:
         f.write(html_output)
         f.close()
-
 
 
 
