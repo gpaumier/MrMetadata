@@ -119,7 +119,7 @@ def check_local_uploads(family, prefix):
 
     NUMBER_OF_FILES_PER_PAGE = 500
 
-    current_site = pywikibot.getSite(prefix, family)
+    current_site = pywikibot.Site(prefix, family)
 
     start = '!'
 
