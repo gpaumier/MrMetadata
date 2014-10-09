@@ -14,6 +14,9 @@ import jinja2
 import datetime
 import argparse
 import collections
+import pygal
+from pygal.style import LightSolarizedStyle
+
 
 
 SEP = '\n_________________________________\n\n'
@@ -215,6 +218,8 @@ def check_local_uploads(family, prefix):
     site_tally['last_updated_on'] = datetime.date.today().isoformat()
 
     update_tallies( output_directory_prefix, site_tally )
+    
+    update_charts(output_directory_prefix, family, prefix)
 
     # Print the first page now that we have the tallies
 
@@ -463,6 +468,39 @@ def set_resume_point(json_list, family, prefix):
     with io.open('resume_'+json_list, 'w', encoding='utf8') as resume_file:       
         resume_file.write(unicode(json.dumps(resume_point,indent=4,sort_keys=True,ensure_ascii=False)))
         resume_file.close()
+
+
+#--------------------------------------------------------------------------------
+#                    Create and update historical charts
+#--------------------------------------------------------------------------------
+
+def update_charts(output_directory_prefix, family, prefix):
+    bar_chart = pygal.Bar(show_legend=False, style=LightSolarizedStyle)
+    bar_chart.add
+
+    historical_tallies_file_name = output_directory_prefix + family + '/' + prefix + '/historical_tallies.json'
+
+    with open(historical_tallies_file_name, 'r') as historical_tallies_file:
+        historical_tallies = json.load(historical_tallies_file)
+        historical_tallies_file.close()
+        
+    historical_tallies = collections.OrderedDict(sorted(historical_tallies.items(), key=lambda t: t[0]))
+    
+    historical_tallies.pop('last_updated_on')
+
+    values_to_chart = []
+    dates = []
+
+    for date in historical_tallies:
+        dates.append(date)
+        values_to_chart.append(historical_tallies[date]['percentage_ok'])
+
+    bar_chart.add('Percentage ok', values_to_chart)
+    
+    bar_chart.x_labels = dates
+
+    bar_chart.render_to_file(output_directory_prefix + family + '/' + prefix + '/historical_tallies.svg')
+
 
 
 #--------------------------------------------------------------------------------
