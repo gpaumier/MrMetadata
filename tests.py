@@ -14,8 +14,6 @@ template_loader = jinja2.FileSystemLoader( searchpath="templates/" )
 
 template_env = jinja2.Environment( loader=template_loader )
 
-config2.register_families_folder('families')
-
 #--------------------------------------------------------------------------------
 #                                      main
 #--------------------------------------------------------------------------------
