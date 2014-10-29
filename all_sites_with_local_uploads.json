@@ -698,14 +698,29 @@
         "zh-min-nan",
         "zu"
     ],
-    "incubator": ["incubator"],
-    "meta": ["meta"],
-    "species": ["species"],
-    "mediawiki": ["mediawiki"],
-    "strategy": ["strategy"],
-    "wmfwiki": [ "wmfwiki" ],
-    "wikisourceorg": ["mul"],
-    "wikimania": ["2005",
+    "incubator": [
+        "incubator"
+    ],
+    "meta": [
+        "meta"
+    ],
+    "species": [
+        "species"
+    ],
+    "mediawiki": [
+        "mediawiki"
+    ],
+    "strategy": [
+        "strategy"
+    ],
+    "wmfwiki": [
+        "wmfwiki" 
+    ],
+    "wikisourceorg": [
+        "mul"
+    ],
+    "wikimania": [
+        "2005",
         "2006",
         "2007",
         "2008",
@@ -715,5 +730,9 @@
         "2012",
         "2013",
         "2014",
-        "2015"]
+        "2015"
+    ],
+    "wikimedia": [
+        "se"
+    ]
 }
