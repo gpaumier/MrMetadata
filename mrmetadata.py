@@ -275,43 +275,49 @@ def check_metadata(current_site, pages):
         
         no_mr_description = no_mr_author = no_mr_source = no_mr_license_short = no_mr_license_url = False
 
-        title = page['title']
+        repository = page['imagerepository']
         
-        try:
-            metadata = page['imageinfo'][0]['extmetadata']
-            # print u'checking metadata for "{0}"'.format(title) # for debugging
+        if repository <> "local":
+            pass
+        else:
+
+            title = page['title']
             
             try:
-                mr_description = metadata['ImageDescription']['value']
-            except KeyError:
-                no_mr_description = True
-
-            try:
-                mr_author = metadata['Artist']['value']
-            except KeyError:
-                no_mr_author = True
-
-            try:
-                mr_source = metadata['Credit']['value']
-            except KeyError:
-                no_mr_source = True
-                    
-            try:
-                mr_license_short = metadata['LicenseShortName']['value']
-            except KeyError:
-                no_mr_license_short = True
-                    
-            try:
-                mr_license_url = metadata['LicenseUrl']['value']
-            except KeyError:
-                no_mr_license_url = True
+                metadata = page['imageinfo'][0]['extmetadata']
+                # print u'checking metadata for "{0}"'.format(title) # for debugging
                 
-            if ( no_mr_description and no_mr_author and no_mr_source or no_mr_license_short and no_mr_license_url):
-                files_with_missing_mrd.append([title, no_mr_description, no_mr_author, no_mr_source, no_mr_license_short, no_mr_license_url])
+                try:
+                    mr_description = metadata['ImageDescription']['value']
+                except KeyError:
+                    no_mr_description = True
+
+                try:
+                    mr_author = metadata['Artist']['value']
+                except KeyError:
+                    no_mr_author = True
+
+                try:
+                    mr_source = metadata['Credit']['value']
+                except KeyError:
+                    no_mr_source = True
                         
-        except KeyError: #No imageinfo means no image, so skip
-            #print u'Skipping {0}'.format(title)
-            pass
+                try:
+                    mr_license_short = metadata['LicenseShortName']['value']
+                except KeyError:
+                    no_mr_license_short = True
+                        
+                try:
+                    mr_license_url = metadata['LicenseUrl']['value']
+                except KeyError:
+                    no_mr_license_url = True
+                    
+                if ( no_mr_description and no_mr_author and no_mr_source or no_mr_license_short and no_mr_license_url):
+                    files_with_missing_mrd.append([title, no_mr_description, no_mr_author, no_mr_source, no_mr_license_short, no_mr_license_url])
+                            
+            except KeyError: #No imageinfo means no image, so skip
+                #print u'Skipping {0}'.format(title)
+                pass
                         
     done_checking_metadata = time.clock();
     #print u'Metadata checked in {0}s'.format(done_checking_metadata - start_checking_metadata)
