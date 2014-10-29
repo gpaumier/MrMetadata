@@ -3,20 +3,11 @@
 import os
 import io
 import sys
-import pywikibot
-from pywikibot import pagegenerators
-from pywikibot import site
-from pywikibot import page
-from pywikibot import config2
 import json
 import time
 import jinja2
 import datetime
-import argparse
 import collections
-import pygal
-from pygal.style import LightSolarizedStyle
-
 
 
 template_loader = jinja2.FileSystemLoader( searchpath="templates/" )
