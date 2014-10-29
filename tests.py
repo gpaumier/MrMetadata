@@ -3,6 +3,7 @@
 import os
 import io
 import sys
+import pywikibot
 import json
 import time
 import jinja2
@@ -113,3 +114,7 @@ if __name__ == '__main__':
     
     try:
         main()
+       
+    finally:
+        pywikibot.stopme()
+        
