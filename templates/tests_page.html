@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Tests{% endblock %}
+
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+    <li><a href="index.html">Home</a></li>
+    <li class="active">Tests</li>
+</ol>
+{% endblock %}
+
+{% block content %}      
+                    
+    <div class="container">
+
+        <table class="table table-striped">
+        
+            <tr>
+                <th>Family</td>
+                <th>Prefix</th>
+                <th>Tally was updated within 24 hours</th>
+                <th>All files > files missing MRD</th>
+            </tr>
+        
+        {{ formatted_test_results }}
+        
+        </table>
+    
+        
+    </div>
+
+{% endblock %}
