@@ -16,7 +16,7 @@ import argparse
 import collections
 import pygal
 from pygal.style import LightSolarizedStyle
-
+import oursql
 
 
 SEP = '\n_________________________________\n\n'
@@ -38,7 +38,7 @@ def main(args):
        return
     
     if args.commons:
-        check_commons()
+        check_local_uploads("commons", "commons", True)
         return
     
     json_list = args.json
@@ -54,14 +54,6 @@ def main(args):
 #--------------------------------------------------------------------------------
 #                         get files and check metadata
 #--------------------------------------------------------------------------------
-
-
-def check_commons():
-    
-    print u'In the future, we\'ll be checking Commons here.'
-    
-    return
-
 
 def cycle_through_wikis(json_list, resume):
 
@@ -92,7 +84,7 @@ def cycle_through_wikis(json_list, resume):
             
             
 
-def check_local_uploads(family, prefix):
+def check_local_uploads(family, prefix, commons=False):
             
     print SEP+u'Started run through {0}.{1}'.format(prefix, family)
 
@@ -118,12 +110,17 @@ def check_local_uploads(family, prefix):
     CHECK_FILES_BY_BATCHES_OF = 50 # Max value is 50
 
     NUMBER_OF_FILES_PER_PAGE = 500
+    
+    commons_batch_number = 0
 
     current_site = pywikibot.Site(prefix, family)
 
     start = '!'
 
-    batch_of_files = get_batch_of_files(current_site, REQUEST_FILES_BY_BATCHES_OF, API_STEP, start)
+    if commons:
+        batch_of_files = get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, commons_batch_number)
+    else:
+        batch_of_files = get_batch_of_files(current_site, REQUEST_FILES_BY_BATCHES_OF, API_STEP, start)
             
     files_with_missing_mrd = []
 
@@ -144,8 +141,12 @@ def check_local_uploads(family, prefix):
         another_batch_is_coming = len(batch_of_files) == REQUEST_FILES_BY_BATCHES_OF
 
         if ( another_batch_is_coming ):
-            start = batch_of_files[-1].title(withNamespace = False).encode('utf-8')
-            #print u'Next batch will start at {0}'.format(start) #debug
+            
+            if commons:
+                commons_batch_number = commons_batch_number + 1
+            else:
+                start = batch_of_files[-1].title(withNamespace = False).encode('utf-8')
+                #print u'Next batch will start at {0}'.format(start) #debug
                     
             batch_of_files = batch_of_files[:-1]
 
@@ -190,7 +191,10 @@ def check_local_uploads(family, prefix):
         # We're done with this batch, request another one
                 
         if ( another_batch_is_coming ):
-            batch_of_files = get_batch_of_files(current_site, REQUEST_FILES_BY_BATCHES_OF, API_STEP, start)
+            if commons:
+                batch_of_files = get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, commons_batch_number)
+            else:
+                batch_of_files = get_batch_of_files(current_site, REQUEST_FILES_BY_BATCHES_OF, API_STEP, start)
                     
         else:
             # If we're still on the first page, dump all the remaining files there
@@ -208,6 +212,11 @@ def check_local_uploads(family, prefix):
     done_checking_site = time.clock();
     print u'Checked {0}.{1} in {2}s'.format(prefix, family, done_checking_site - start_checking_site)
 
+    # Commons is special because, to save time during the check, we skip all the files transcluding templates we know have MRD markers.
+    # So in order to save the proper tally, we need to correct the total number of files on Commons:
+
+    if commons:
+        site_tally['number_of_files'] = get_total_number_of_Commons_files()
 
     # Update the tallies
             
@@ -233,12 +242,39 @@ def check_local_uploads(family, prefix):
     update_main_page()                  # Update with numbers from the latest wiki that was checked
 
 
-def get_batch_of_files(current_site, batches_of, api_step, start_from):
+def get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, commons_batch_number):
+    
+    commons_query =  """SELECT page_title
+                            FROM page
+                            WHERE
+                                    page_namespace = 6
+                                AND page_is_redirect = 0
+                                AND page_id NOT IN (
+                                                    SELECT DISTINCT(tl_from) FROM templatelinks
+                                                    WHERE
+                                                            tl_namespace = 10
+                                                        AND tl_from_namespace = 6
+                                                        AND tl_title IN ('Information')
+                                                    ) LIMIT {0} OFFSET {1};""".format(REQUEST_FILES_BY_BATCHES_OF,
+                                                                                      commons_batch_number * REQUEST_FILES_BY_BATCHES_OF)
+        
+    batch_of_files_generator = pagegenerators.MySQLPageGenerator(commons_query, "commonswiki_p")
+                                      
+    batch_of_files=[]
+
+    for page in batch_of_files_generator:
+        batch_of_files.append(page)
+        
+    return batch_of_files
+
+
+
+def get_batch_of_files(current_site, batches_of, api_step, start_from, commons):
 
     start_getting_allfiles = time.clock()
 
     #print u'Requesting {0} files'.format(batches_of) #debug
-
+    
     batch_of_files_generator = pagegenerators.AllpagesPageGenerator(site=current_site, start=start_from, namespace=6, includeredirects=False, total=batches_of, step=api_step, content=False)
 
     done_getting_allfiles = time.clock();
