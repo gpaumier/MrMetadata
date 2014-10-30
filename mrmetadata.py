@@ -269,7 +269,7 @@ def get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, commons_batch_number
 
 
 
-def get_batch_of_files(current_site, batches_of, api_step, start_from, commons):
+def get_batch_of_files(current_site, batches_of, api_step, start_from):
 
     start_getting_allfiles = time.clock()
 
