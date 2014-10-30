@@ -135,9 +135,10 @@ def check_local_uploads(family, prefix):
 
     while len(batch_of_files):
 
+        files_with_missing_mrd = []
+
         site_tally['number_of_files'] = site_tally['number_of_files'] + len(batch_of_files)
-
-
+        
         # Is there another batch after that? If so, save where to start it
 
         another_batch_is_coming = len(batch_of_files) == REQUEST_FILES_BY_BATCHES_OF
@@ -151,9 +152,10 @@ def check_local_uploads(family, prefix):
         # Check the files in our batch for machine-readable metadata
 
         while len(batch_of_files):
+            
             files_with_missing_mrd = files_with_missing_mrd + check_metadata(current_site, batch_of_files[:CHECK_FILES_BY_BATCHES_OF])
             batch_of_files = batch_of_files[CHECK_FILES_BY_BATCHES_OF:]
-
+        
         site_tally['number_of_files_with_missing_mrd'] = len(files_with_missing_mrd) + site_tally['number_of_files_with_missing_mrd']
 
 
