@@ -230,7 +230,9 @@ def check_local_uploads(family, prefix, commons=False):
 
     update_tallies( output_directory_prefix, site_tally )
     
-    update_charts(output_directory_prefix, family, prefix)
+    update_chart(output_directory_prefix, family, prefix)
+    
+    update_main_chart(output_directory_prefix)
 
     # Print the first page now that we have the tallies
 
@@ -520,16 +522,36 @@ def set_resume_point(json_list, family, prefix):
 #                    Create and update historical charts
 #--------------------------------------------------------------------------------
 
-def update_charts(output_directory_prefix, family, prefix):
-    bar_chart = pygal.Bar(show_legend=False, style=LightSolarizedStyle)
-    bar_chart.add
-
-    historical_tallies_file_name = output_directory_prefix + family + '/' + prefix + '/historical_tallies.json'
+def update_chart(output_directory_prefix, family, prefix):
+    
+    historical_tallies_file_name = output_directory_prefix + family + '/' + prefix + '/' + 'historical_tallies.json'
 
     with open(historical_tallies_file_name, 'r') as historical_tallies_file:
         historical_tallies = json.load(historical_tallies_file)
-        historical_tallies_file.close()
-        
+        historical_tallies_file.close()    
+
+    output_file = output_directory_prefix + family + '/' + prefix + '/' + 'historical_tallies.svg'
+
+    generate_chart(historical_tallies, output_file)
+
+def update_main_chart(output_directory_prefix):
+    
+    historical_tallies_file_name = output_directory_prefix + 'historical_tallies.json'
+
+    with open(historical_tallies_file_name, 'r') as historical_tallies_file:
+        historical_tallies = json.load(historical_tallies_file)
+        historical_tallies_file.close()    
+
+    output_file = output_directory_prefix + 'historical_tallies.svg'
+
+    generate_chart(historical_tallies, output_file)
+
+
+def generate_chart(historical_tallies, output_file):
+    
+    bar_chart = pygal.Bar(show_legend=False, style=LightSolarizedStyle)
+    bar_chart.add
+    
     historical_tallies = collections.OrderedDict(sorted(historical_tallies.items(), key=lambda t: t[0]))
     
     historical_tallies.pop('last_updated_on')
@@ -545,8 +567,7 @@ def update_charts(output_directory_prefix, family, prefix):
     
     bar_chart.x_labels = dates
 
-    bar_chart.render_to_file(output_directory_prefix + family + '/' + prefix + '/historical_tallies.svg')
-
+    bar_chart.render_to_file(output_file)
 
 
 #--------------------------------------------------------------------------------
