@@ -51,7 +51,7 @@
                         <li>Total number of files: {{ global['global']['number_of_files']|format_number }}</li>
                         <li>Files with missing machine-readable metadata: {{ global['global']['number_of_files_with_missing_mrd']|format_number }}</li>
                     </ul>
-                    <p>Note that these numbers don't include Wikimedia Commons (see below).<p>
+                    <p>As of 2014-12-10, these numbers include Wikimedia Commons.<p>
                 </div>
                 </div>
             </div>
@@ -124,59 +124,7 @@
             </div>        
         
         {% endfor %}
-        
-            <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#commons">
                 
-                                <div class="row">
-                                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1">Commons</div>
-
-                                    <div class="col-xs-12 col-sm-10 col-md-10 col-lg-11">
-                                        <div class="progress">
-                                            <div class="progress-bar"
-                                            style="width: 90%">
-                                                <span>90% complete</span>
-                                            </div>
-                                            <div class="progress-bar progress-bar-invisible"
-                                            style="width: 10%">
-                                                <span>700,000 files to go</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-                            </a>
-                        </h4>
-                    </div>
-                   
-                <div id="commons" class="panel-collapse collapse">
-                    <div class="panel-body">
-                    
-                        <div id="commons.commons" class="row">
-                            
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            
-                                <div class="alert alert-info" role="alert">Numbers for Wikimedia Commons are an estimate.</div>
-                            
-                                <p>More precise numbers are underway. In the meantime, you can fix files on Commons using Magnus Manske's <a title="Open tool for Commons" href="https://tools.wmflabs.org/add-information/no_information.php">no_information</a> tool.</p>
-                            
-                                <p>You can <a href="https://meta.wikimedia.org/wiki/File_metadata_cleanup_drive/Participants" title="Sign up">sign up on Meta</a> to be informed when better numbers are available.</p>
-
-                            </div>
-                            
-                        </div>
-                   
-                    </div>
-                </div>
-               
-                   
-            </div>
-        
-        
-        
-        
         </div>  
         
     </div>
