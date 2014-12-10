@@ -1,0 +1,2 @@
+use commonswiki_p;
+SELECT count(img_name) FROM image;
