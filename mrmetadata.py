@@ -16,7 +16,7 @@ import argparse
 import collections
 import pygal
 from pygal.style import LightSolarizedStyle
-import oursql
+import logging
 
 
 SEP = '\n_________________________________\n\n'
@@ -103,22 +103,22 @@ def check_local_uploads(family, prefix, commons=False):
 
     start_checking_site = time.clock()
             
-    REQUEST_FILES_BY_BATCHES_OF = 3000
+    REQUEST_FILES_BY_BATCHES_OF = 3000 # 3000
             
     API_STEP = 200
 
     CHECK_FILES_BY_BATCHES_OF = 50 # Max value is 50
 
-    NUMBER_OF_FILES_PER_PAGE = 500
+    NUMBER_OF_FILES_PER_PAGE = 500 # 500
     
-    commons_batch_number = 0
+    commons_byte_index = 0
 
     current_site = pywikibot.Site(prefix, family)
 
     start = '!'
 
     if commons:
-        batch_of_files = get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, commons_batch_number)
+        batch_of_files, commons_byte_index = get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, commons_byte_index)
     else:
         batch_of_files = get_batch_of_files(current_site, REQUEST_FILES_BY_BATCHES_OF, API_STEP, start)
             
@@ -142,9 +142,7 @@ def check_local_uploads(family, prefix, commons=False):
 
         if ( another_batch_is_coming ):
             
-            if commons:
-                commons_batch_number = commons_batch_number + 1
-            else:
+            if not commons:
                 start = batch_of_files[-1].title(withNamespace = False).encode('utf-8')
                 #print u'Next batch will start at {0}'.format(start) #debug
                     
@@ -153,7 +151,7 @@ def check_local_uploads(family, prefix, commons=False):
         # Check the files in our batch for machine-readable metadata
 
         while len(batch_of_files):
-            
+                        
             files_with_missing_mrd = files_with_missing_mrd + check_metadata(current_site, batch_of_files[:CHECK_FILES_BY_BATCHES_OF])
             batch_of_files = batch_of_files[CHECK_FILES_BY_BATCHES_OF:]
         
@@ -161,14 +159,17 @@ def check_local_uploads(family, prefix, commons=False):
 
 
         # Output pages if we have enough files to list
-
+        
+        # print "We have {0} files with missing MRD in this batch, and {1} total".format(len(files_with_missing_mrd), site_tally['number_of_files_with_missing_mrd']) # debug
+        
+      
         while (len(files_with_missing_mrd) >= NUMBER_OF_FILES_PER_PAGE):
 
             # We take the first page out to print it at the end (so we have can display the tally)
 
             if not len(files_to_print_on_the_first_page):
                 files_to_print_on_the_first_page = list(files_with_missing_mrd[:NUMBER_OF_FILES_PER_PAGE])
-
+                
             else:
 
             # We've got enough files to print a page; print them and remove them from the queue
@@ -192,7 +193,7 @@ def check_local_uploads(family, prefix, commons=False):
                 
         if ( another_batch_is_coming ):
             if commons:
-                batch_of_files = get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, commons_batch_number)
+                batch_of_files, commons_byte_index = get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, commons_byte_index)
             else:
                 batch_of_files = get_batch_of_files(current_site, REQUEST_FILES_BY_BATCHES_OF, API_STEP, start)
                     
@@ -244,32 +245,47 @@ def check_local_uploads(family, prefix, commons=False):
     update_main_page()                  # Update with numbers from the latest wiki that was checked
 
 
-def get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, commons_batch_number):
+def get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, position_in_file):
     
-    commons_query =  """SELECT page_title
-                            FROM page
-                            WHERE
-                                    page_namespace = 6
-                                AND page_is_redirect = 0
-                                AND page_id NOT IN (
-                                                    SELECT DISTINCT(tl_from) FROM templatelinks
-                                                    WHERE
-                                                            tl_namespace = 10
-                                                        AND tl_from_namespace = 6
-                                                        AND tl_title IN ('Information')
-                                                    ) LIMIT {0} OFFSET {1};""".format(REQUEST_FILES_BY_BATCHES_OF,
-                                                                                      commons_batch_number * REQUEST_FILES_BY_BATCHES_OF)
-        
-    batch_of_files_generator = pagegenerators.MySQLPageGenerator(commons_query, "commonswiki_p")
-                                      
+    # There ought to be a better way to do this, but this'll do as a first step.
+    
     batch_of_files=[]
-
-    for page in batch_of_files_generator:
-        batch_of_files.append(page)
+    site = pywikibot.Site('commons', 'commons')
         
-    return batch_of_files
+    with io.open('commons_list.txt', 'r', encoding='utf8') as commons_list_file:
+        
+        commons_list_file.seek(position_in_file)
+        
+        for iter in range(0, REQUEST_FILES_BY_BATCHES_OF):
+            
+            previous_position_in_file = position_in_file
+            
+            line = commons_list_file.readline()
+            
+            # byte_index = byte_index + len(line)
+            
+            position_in_file = commons_list_file.tell()
+            
+            #print "Byte index after reading the line: {0}".format(byte_index)
+            #print "Tell: {0}".format(commons_list_file.tell)
+            #print u"Line read from the file: {0}".format(line)
+            
+            title = line.strip();
+            
+            page = pywikibot.Page(site, "File:" + title)
+            
+            # print u"Title formatted from the line: {0}".format(page) # debug
 
-
+            batch_of_files.append(page)
+            
+            iter = iter + 1
+        
+    commons_list_file.close()
+    
+    #print u"We got the following batch: {0}".format(batch_of_files)
+    
+    return batch_of_files, previous_position_in_file
+    
 
 def get_batch_of_files(current_site, batches_of, api_step, start_from):
 
@@ -325,7 +341,7 @@ def check_metadata(current_site, pages):
             
             try:
                 metadata = page['imageinfo'][0]['extmetadata']
-                # print u'checking metadata for "{0}"'.format(title) # for debugging
+                #print u'checking metadata for "{0}"'.format(title) # for debugging
                 
                 try:
                     mr_description = metadata['ImageDescription']['value']
@@ -354,6 +370,9 @@ def check_metadata(current_site, pages):
                     
                 if ( no_mr_description and no_mr_author and no_mr_source or no_mr_license_short and no_mr_license_url):
                     files_with_missing_mrd.append([title, no_mr_description, no_mr_author, no_mr_source, no_mr_license_short, no_mr_license_url])
+                    #print "The file is missing required machine-readable metadata and has been added to the list." #debug
+                #else:
+                #    print "Everything looks good; moving on." #debug
                             
             except KeyError: #No imageinfo means no image, so skip
                 #print u'Skipping {0}'.format(title)
@@ -638,6 +657,8 @@ def format_files ( files_to_print, current_site ):
 
 
 def output_site_page(output_directory, page_number, current_site, files_to_print, max_files_per_page, last_page = False, ):
+    
+    print "Outputting page: {0}".format(page_number) #debug
 
     template = template_env.get_template( 'site_page.html' )
 
