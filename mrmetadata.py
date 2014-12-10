@@ -16,7 +16,6 @@ import argparse
 import collections
 import pygal
 from pygal.style import LightSolarizedStyle
-import logging
 
 
 SEP = '\n_________________________________\n\n'
@@ -103,13 +102,13 @@ def check_local_uploads(family, prefix, commons=False):
 
     start_checking_site = time.clock()
             
-    REQUEST_FILES_BY_BATCHES_OF = 3000 # 3000
+    REQUEST_FILES_BY_BATCHES_OF = 3000
             
     API_STEP = 200
 
     CHECK_FILES_BY_BATCHES_OF = 50 # Max value is 50
 
-    NUMBER_OF_FILES_PER_PAGE = 500 # 500
+    NUMBER_OF_FILES_PER_PAGE = 500
     
     commons_byte_index = 0
 
@@ -151,7 +150,7 @@ def check_local_uploads(family, prefix, commons=False):
         # Check the files in our batch for machine-readable metadata
 
         while len(batch_of_files):
-                        
+            
             files_with_missing_mrd = files_with_missing_mrd + check_metadata(current_site, batch_of_files[:CHECK_FILES_BY_BATCHES_OF])
             batch_of_files = batch_of_files[CHECK_FILES_BY_BATCHES_OF:]
         
@@ -262,28 +261,18 @@ def get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, position_in_file):
             
             line = commons_list_file.readline()
             
-            # byte_index = byte_index + len(line)
-            
             position_in_file = commons_list_file.tell()
-            
-            #print "Byte index after reading the line: {0}".format(byte_index)
-            #print "Tell: {0}".format(commons_list_file.tell)
-            #print u"Line read from the file: {0}".format(line)
             
             title = line.strip();
             
             page = pywikibot.Page(site, "File:" + title)
             
-            # print u"Title formatted from the line: {0}".format(page) # debug
-
             batch_of_files.append(page)
             
             iter = iter + 1
         
     commons_list_file.close()
-    
-    #print u"We got the following batch: {0}".format(batch_of_files)
-    
+        
     return batch_of_files, previous_position_in_file
     
 
@@ -658,7 +647,7 @@ def format_files ( files_to_print, current_site ):
 
 def output_site_page(output_directory, page_number, current_site, files_to_print, max_files_per_page, last_page = False, ):
     
-    print "Outputting page: {0}".format(page_number) #debug
+    # print "Outputting page: {0}".format(page_number) #debug
 
     template = template_env.get_template( 'site_page.html' )
 
