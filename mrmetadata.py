@@ -102,7 +102,7 @@ def check_local_uploads(family, prefix, commons=False):
 
     start_checking_site = time.clock()
             
-    REQUEST_FILES_BY_BATCHES_OF = 3000
+    REQUEST_FILES_BY_BATCHES_OF = 200 # 3000
             
     API_STEP = 200
 
@@ -255,7 +255,11 @@ def get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, position_in_file):
         
         commons_list_file.seek(position_in_file)
         
-        for iter in range(0, REQUEST_FILES_BY_BATCHES_OF):
+        files_left_to_get = REQUEST_FILES_BY_BATCHES_OF
+        
+        end_of_file = False
+        
+        while not end_of_file and files_left_to_get:
             
             previous_position_in_file = position_in_file
             
@@ -265,16 +269,35 @@ def get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, position_in_file):
             
             title = line.strip();
             
-            page = pywikibot.Page(site, "File:" + title)
-            
-            batch_of_files.append(page)
-            
-            iter = iter + 1
+            if title:
+                page = pywikibot.Page(site, "File:" + title)
+                batch_of_files.append(page)
+                files_left_to_get = files_left_to_get - 1
+                
+            else:
+                end_of_file = True
         
     commons_list_file.close()
         
     return batch_of_files, previous_position_in_file
+
+
+
+def get_total_number_of_Commons_files():
+
+    with io.open('commons_filecount.txt', 'r', encoding='utf8') as commons_count_file:
+                
+        commons_count_file.readline() # Ignore the first line (title)
+            
+        file_count = commons_count_file.readline()
+            
+    commons_count_file.close()
     
+    file_count = file_count.strip();
+   
+    return int(file_count)
+
+
 
 def get_batch_of_files(current_site, batches_of, api_step, start_from):
 
