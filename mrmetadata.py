@@ -102,7 +102,7 @@ def check_local_uploads(family, prefix, commons=False):
 
     start_checking_site = time.clock()
             
-    REQUEST_FILES_BY_BATCHES_OF = 200 # 3000
+    REQUEST_FILES_BY_BATCHES_OF = 3000
             
     API_STEP = 200
 
