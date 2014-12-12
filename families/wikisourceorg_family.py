@@ -10,6 +10,7 @@ Please do not commit this to the Git repository!
 
 from pywikibot import family
 
+
 class Family(family.Family):
     def __init__(self):
         family.Family.__init__(self)
@@ -17,8 +18,6 @@ class Family(family.Family):
         self.langs = {
             'mul': 'wikisource.org',
         }
-
-
 
     def scriptpath(self, code):
         return {
