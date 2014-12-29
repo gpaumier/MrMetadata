@@ -1,9 +1,9 @@
 use commonswiki_p;
-SELECT DISTINCT img_user_text AS user, COUNT(image.img_name) AS files_count 
+SELECT img_user_text AS user, image.img_name AS file, image.img_timestamp AS date
     FROM image
     WHERE image.img_name IN (
         SELECT page_title FROM page
-            WHERE  
+            WHERE 
                 page_namespace = 6
             AND page_id NOT IN (
                     SELECT DISTINCT(tl_from) FROM templatelinks
@@ -13,5 +13,5 @@ SELECT DISTINCT img_user_text AS user, COUNT(image.img_name) AS files_count
                         AND tl_title IN ('Information','Painting', 'Blason-fr-en', 'Blason-fr-en-it', 'Blason-xx', 'COAInformation', 'Artwork', 'Art_Photo','Photograph', 'Book', 'Map', 'Musical_work', 'Specimen' )
                     )
     )
-    GROUP BY USER 
-    ORDER BY files_count DESC;
+    GROUP BY user 
+    ORDER BY date DESC;
