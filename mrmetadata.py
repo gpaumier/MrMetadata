@@ -238,7 +238,7 @@ def check_local_uploads(family, prefix, commons=False):
     output_first_page(output_directory, current_site, files_to_print_on_the_first_page, NUMBER_OF_FILES_PER_PAGE, site_tally, last_page=all_files_are_on_first_page)
 
     update_main_page()                  # Update with numbers from the latest wiki that was checked
-    # update_by_size_page()
+    update_by_size_page()
 
 
 def get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, position_in_file):
@@ -661,6 +661,28 @@ def update_main_page():
     html_output = template.render(template_params)
 
     file_name = 'public_html/index.html'
+
+    with io.open(file_name, 'w', encoding='utf8') as f:
+        f.write(html_output)
+        f.close()
+
+
+
+def update_by_size_page():
+
+    template = template_env.get_template('by_size.html')
+
+    tallies = {}
+
+    with io.open('tallies_by_size.json', 'r', encoding='utf8') as tallies_file:
+        tallies = json.load(tallies_file)
+        tallies_file.close()
+
+    template_params = {'tallies': tallies}
+
+    html_output = template.render(template_params)
+
+    file_name = 'public_html/by_size.html'
 
     with io.open(file_name, 'w', encoding='utf8') as f:
         f.write(html_output)
