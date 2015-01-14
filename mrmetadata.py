@@ -224,6 +224,7 @@ def check_local_uploads(family, prefix, commons=False):
 
     site_tally['last_updated_on'] = datetime.date.today().isoformat()
 
+    update_tallies_by_size(output_directory_prefix, site_tally)
     update_tallies(output_directory_prefix, site_tally)
 
     update_chart(output_directory_prefix, family, prefix)
@@ -237,6 +238,7 @@ def check_local_uploads(family, prefix, commons=False):
     output_first_page(output_directory, current_site, files_to_print_on_the_first_page, NUMBER_OF_FILES_PER_PAGE, site_tally, last_page=all_files_are_on_first_page)
 
     update_main_page()                  # Update with numbers from the latest wiki that was checked
+    # update_by_size_page()
 
 
 def get_batch_of_Commons_files(REQUEST_FILES_BY_BATCHES_OF, position_in_file):
@@ -486,6 +488,48 @@ def update_tallies(output_directory_prefix, site_tally):
     archive_tally(global_tally, output_directory_prefix + '/historical_tallies.json')
 
     print u'Updated tallies.'
+
+
+def update_tallies_by_size(output_directory_prefix, site_tally):
+
+    # Reminder: site_tally = {'prefix', 'family', 'number_of_files', 'number_of_files_with_missing_mrd', 'percentage_ok', 'last_updated_on'}
+
+    if not os.path.exists('tallies_by_size.json'):
+        tallies = []
+    else:
+        with io.open('tallies_by_size.json', 'r', encoding='utf8') as tallies_file:
+            tallies = json.load(tallies_file)
+            tallies_file.close()
+
+    # Find and remove the existing site tally if it's there, then add the new one
+
+    tally_index = 0
+    
+    not_end_of_list = len(tallies)
+    
+    while not_end_of_list: 
+            
+        if tallies[tally_index]['family'] == site_tally['family'] and tallies[tally_index]['prefix'] == site_tally['prefix']:
+            tallies.pop(tally_index)
+            not_end_of_list = False
+        else:
+            tally_index = tally_index + 1
+            not_end_of_list = not_end_of_list - 1
+    
+    tallies.append(site_tally)
+    
+    # Then we sort the list based on 'number_of_files_with_missing_mrd'
+    
+    tallies.sort(key=lambda tal: tal['number_of_files_with_missing_mrd'], reverse=True)
+
+    # Write the updated list to the JSON file
+
+    with io.open('tallies_by_size.json', 'w', encoding='utf8') as tallies_file:
+
+        tallies_file.write(unicode(json.dumps(tallies, indent=4, sort_keys=True, ensure_ascii=False)))
+
+        tallies_file.truncate()
+        tallies_file.close()
 
 
 def archive_tally(tally, tally_archive_file_name):
