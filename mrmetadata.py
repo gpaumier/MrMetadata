@@ -162,15 +162,16 @@ def check_local_uploads(family, prefix, commons=False):
 
         while (len(files_with_missing_mrd) >= NUMBER_OF_FILES_PER_PAGE):
 
-            # We take the first page out to print it at the end (so we have can display the tally)
+            # We take the first page out to print it at the end (so we can display the tally)
 
             if not len(files_to_print_on_the_first_page):
+                
                 files_to_print_on_the_first_page = list(files_with_missing_mrd[:NUMBER_OF_FILES_PER_PAGE])
 
             else:
 
                 # We've got enough files to print a page; print them and remove them from the queue
-
+                
                 output_site_page(output_directory, page_number, current_site, files_with_missing_mrd[:NUMBER_OF_FILES_PER_PAGE], NUMBER_OF_FILES_PER_PAGE)
 
             page_number = page_number + 1
@@ -179,11 +180,6 @@ def check_local_uploads(family, prefix, commons=False):
 
             if len(files_with_missing_mrd):
                 all_files_are_on_first_page = False
-
-        # If we haven't had enough to fill several pages, add what we have to the first page
-
-        if not len(files_to_print_on_the_first_page):
-            files_to_print_on_the_first_page = list(files_with_missing_mrd[:NUMBER_OF_FILES_PER_PAGE])
 
         # We're done with this batch, request another one
 
