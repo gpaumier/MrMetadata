@@ -11,17 +11,17 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="{{ return_to_root }}vendor/bootstrap-3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="http://tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css">
         <style>
             body {
                 padding-top: 50px;
                 padding-bottom: 20px;
             }
         </style>
-        <link rel="stylesheet" href="{{ return_to_root }}vendor/bootstrap-3.2.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="//tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap-theme.min.css">
 
-        <link rel="stylesheet" href="{{ return_to_root }}vendor/font-awesome-4.2.0/css/font-awesome.min.css">
-        
+        <link rel="stylesheet" href="//tools-static.wmflabs.org/cdnjs/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
+
         <link rel="stylesheet" href="{{ return_to_root }}main.css">
 
         <script src="{{ return_to_root }}vendor/initializr/modernizr-2.6.2-respond-1.1.0.min.js"></script>
@@ -31,18 +31,18 @@
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
-            
+
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mrm-collapsed-navbar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            
-                <a class="navbar-brand" href="{{ return_to_root }}index.html"><i class="fa fa-tags"></i> MrMetadata</a> 
+
+                <a class="navbar-brand" href="{{ return_to_root }}index.html"><i class="fa fa-tags"></i> MrMetadata</a>
                 <p class="navbar-text">by <a href="https://meta.wikimedia.org/wiki/User:Guillaume_(WMF)" class="navbar-link">guillaume</a></p>
             </div>
-            
+
             <div class="collapse navbar-collapse" id="mrm-collapsed-navbar">
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="https://meta.wikimedia.org/wiki/Talk:File_metadata_cleanup_drive"><i class="fa fa-comments"></i> Discuss</a></li>
@@ -50,16 +50,16 @@
 
                 </ul>
             </div><!-- /.navbar-collapse -->
-            
+
         </div>
     </div>
-        
+
     <div class="container">{% block breadcrumbs %}{% endblock %}</div>
-        
+
     {% block content %}{% endblock %}
-     
-    <script src="{{ return_to_root }}vendor/initializr/jquery-1.11.0.min.js"></script>
-    <script src="{{ return_to_root }}vendor/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+
+    <script src="//tools-static.wmflabs.org/cdnjs/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="{{ return_to_root }}main.js"></script>
     </body>
 </html>
