@@ -87,7 +87,7 @@ def check_local_uploads(family, prefix, commons=False):
 
     print SEP + u'Started run through {0}.{1}'.format(prefix, family)
 
-    output_directory_prefix = '../public_html/'
+    output_directory_prefix = 'public_html/'
     output_directory = output_directory_prefix + family + '/' + prefix
     if not os.path.exists(output_directory):      # Create language directory if it doesn't exist
         os.makedirs(output_directory)
@@ -165,13 +165,13 @@ def check_local_uploads(family, prefix, commons=False):
             # We take the first page out to print it at the end (so we can display the tally)
 
             if not len(files_to_print_on_the_first_page):
-
+                
                 files_to_print_on_the_first_page = list(files_with_missing_mrd[:NUMBER_OF_FILES_PER_PAGE])
 
             else:
 
                 # We've got enough files to print a page; print them and remove them from the queue
-
+                
                 output_site_page(output_directory, page_number, current_site, files_with_missing_mrd[:NUMBER_OF_FILES_PER_PAGE], NUMBER_OF_FILES_PER_PAGE)
 
             page_number = page_number + 1
@@ -500,22 +500,22 @@ def update_tallies_by_size(output_directory_prefix, site_tally):
     # Find and remove the existing site tally if it's there, then add the new one
 
     tally_index = 0
-
+    
     not_end_of_list = len(tallies)
-
+    
     while not_end_of_list: 
-
+            
         if tallies[tally_index]['family'] == site_tally['family'] and tallies[tally_index]['prefix'] == site_tally['prefix']:
             tallies.pop(tally_index)
             not_end_of_list = False
         else:
             tally_index = tally_index + 1
             not_end_of_list = not_end_of_list - 1
-
+    
     tallies.append(site_tally)
-
+    
     # Then we sort the list based on 'number_of_files_with_missing_mrd'
-
+    
     tallies.sort(key=lambda tal: tal['number_of_files_with_missing_mrd'], reverse=True)
 
     # Write the updated list to the JSON file
@@ -656,7 +656,7 @@ def update_main_page():
 
     html_output = template.render(template_params)
 
-    file_name = '../public_html/index.html'
+    file_name = 'public_html/index.html'
 
     with io.open(file_name, 'w', encoding='utf8') as f:
         f.write(html_output)
@@ -678,7 +678,7 @@ def update_by_size_page():
 
     html_output = template.render(template_params)
 
-    file_name = '../public_html/by_size.html'
+    file_name = 'public_html/by_size.html'
 
     with io.open(file_name, 'w', encoding='utf8') as f:
         f.write(html_output)
